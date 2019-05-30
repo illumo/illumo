@@ -1,0 +1,66 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/3.3.0/mixitup.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/illumo/illumo/mixitup-multifilter.min.js"></script>
+
+<script>
+  // Reusable function to convert any string/text to css-friendly format
+  var conv = function (str) {
+    if (!str) {
+        str = 'empty';
+        }
+    return str.replace(/[!\"#$%&'\(\)\*\+,\.\/:;<=>\?\@\[\\\]\^`\{\|\}~]/g, '')
+              .replace(/ /g, "-")
+              .toLowerCase()
+              .trim();
+  }; 
+ 
+  // Creating dynamic elements classes from its categories:
+  var catArray = document.querySelectorAll('.w-dyn-item .categ');
+  catArray.forEach( function(elem) {
+     var text = elem.innerText || elem.innerContent;
+     var className = conv(text);
+     if (!isNaN(parseInt(className.charAt(0), 10))) {
+          className = ("_" + className);
+          }
+     elem.parentElement.classList.add(className);
+  });
+  
+  var sortArray = document.querySelectorAll('.w-dyn-item .title');
+
+sortArray.forEach( function(sortElem) {
+    var sortText = sortElem.innerText || sortElem.innerContent;
+    sortElem.parentElement.setAttribute('data-order', sortText);
+
+});
+  
+    var filterGroups = document.querySelectorAll('.filter-group');
+  filterGroups.forEach( function(group) {
+        group.setAttribute('data-filter-group','');
+  });
+  
+  var containerEl = document.querySelector('.container');
+  var checkboxGroup = document.querySelector('.filter_wrap');
+  var checkboxes = checkboxGroup.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach( function(elem) {
+      var dataValue = elem.getAttribute("data-value");
+      elem.setAttribute('value', dataValue);
+  });
+  
+  var mixer = mixitup(containerEl, {
+       multifilter: {
+         enable: true                 
+       }
+   });
+
+   checkboxGroup.addEventListener('change', function() {
+      var selectors = [];
+      for (var i = 0; i < checkboxes.length; i++) {
+         var checkbox = checkboxes[i];
+         if (checkbox.checked) selectors.push(checkbox.value);
+      }
+      var selectorString = selectors.length > 0 ?
+         selectors.join(',') : 'all';
+        
+      mixer.filter(selectorString);
+   });
+   
+</script>
